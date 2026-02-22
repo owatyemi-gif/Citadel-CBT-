@@ -35,7 +35,7 @@ export async function fetchQuizzesFromFirestore(): Promise<Quiz[]> {
     return quizzes;
   } catch (e) {
     console.error("Error fetching documents: ", e);
-    return [];
+    throw e;
   }
 }
 

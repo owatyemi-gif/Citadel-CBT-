@@ -1,19 +1,21 @@
 
 import React from 'react';
 import { User } from '../types';
+import Footer from './Footer';
 
 interface LayoutProps {
   user: User;
   onLogout: () => void;
+  onNavigate: (view: any) => void;
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ user, onLogout, children }) => {
+const Layout: React.FC<LayoutProps> = ({ user, onLogout, onNavigate, children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="bg-slate-900 text-white shadow-xl sticky top-0 z-50 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3 group cursor-pointer">
+          <div onClick={() => onNavigate('HOME')} className="flex items-center space-x-3 group cursor-pointer">
             <div className="bg-indigo-600 p-2 rounded-lg group-hover:bg-indigo-500 transition-colors">
               <i className="fas fa-landmark text-xl"></i>
             </div>
@@ -39,22 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, children }) => {
         {children}
       </main>
 
-      <footer className="bg-white border-t py-8 no-print">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center space-x-2 text-slate-400 grayscale">
-            <i className="fas fa-landmark"></i>
-            <span className="font-bold text-sm tracking-tighter uppercase">CITADEL CBT</span>
-          </div>
-          <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} CITADEL CBT System. Developed for Citadel Educational Institutions.
-          </p>
-          <div className="flex space-x-4 text-gray-400">
-            <i className="fab fa-facebook-f hover:text-indigo-600 cursor-pointer"></i>
-            <i className="fab fa-twitter hover:text-indigo-600 cursor-pointer"></i>
-            <i className="fab fa-instagram hover:text-indigo-600 cursor-pointer"></i>
-          </div>
-        </div>
-      </footer>
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };

@@ -109,9 +109,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onQuizCreated }) => {
           <span className="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center mr-3 shadow-lg shadow-indigo-100">
             <i className="fas fa-microscope"></i>
           </span>
-          Curriculum Research Engine
+          Curriculum Content Generator
         </h2>
-        <p className="text-gray-400 text-sm mb-8 font-medium">Research and pick specific WAEC, JAMB, or BECE topics for technical generation.</p>
+        <p className="text-gray-400 text-sm mb-8 font-medium">Select specific WAEC, JAMB, or BECE topics to build your examination bank.</p>
         
         <form onSubmit={handleGenerate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
           <div>
@@ -182,13 +182,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onQuizCreated }) => {
             >
               {isGenerating ? (
                 <>
-                  <i className="fas fa-microchip fa-spin mr-3 text-indigo-400"></i>
-                  Engine Thinking...
+                  <i className="fas fa-circle-notch fa-spin mr-3 text-indigo-400"></i>
+                  Processing...
                 </>
               ) : (
                 <>
                   <i className="fas fa-bolt mr-3 text-indigo-400"></i>
-                  Generate Topic-Based Exam
+                  Build Topic-Based Exam
                 </>
               )}
             </button>
@@ -220,7 +220,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onQuizCreated }) => {
               disabled={isGenerating}
               className="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 transition-all font-black uppercase tracking-widest text-xs shadow-lg shadow-indigo-500/20 disabled:opacity-50"
             >
-              {isGenerating ? 'Saving to Cloud...' : 'Commit to Library'}
+              {isGenerating ? 'Saving to Library...' : 'Save to Library'}
             </button>
           </div>
 
