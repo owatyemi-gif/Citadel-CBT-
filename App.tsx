@@ -36,7 +36,7 @@ const App: React.FC = () => {
     } catch (e: any) {
       console.error("Firestore Load Error:", e);
       if (e.message?.toLowerCase().includes("permission")) {
-        setErrorMsg("Firestore Access Error: Your database is currently locked. Please go to the Firebase Console > Firestore Database > Rules and set them to: \n\n service cloud.firestore { match /databases/{database}/documents { match /{document=**} { allow read, write: if true; } } }");
+        setErrorMsg("Firestore Security Alert: Your database rules are either too restrictive or insecurely public. For a secure production environment, please go to the Firebase Console > Firestore Database > Rules and use a structured policy. \n\nRecommended Secure Rules:\nservice cloud.firestore { match /databases/{database}/documents { match /quizzes/{quiz} { allow read: if true; allow write: if request.auth != null; } } }");
       } else {
         setErrorMsg(`Failed to sync data: ${e.message || "Unknown error"}`);
       }
