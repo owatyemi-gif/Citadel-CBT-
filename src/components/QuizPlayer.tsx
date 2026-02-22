@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Quiz, Question } from '@/types';
+import { Quiz, Question } from '@/types.ts';
 
 interface QuizPlayerProps {
   quiz: Quiz;

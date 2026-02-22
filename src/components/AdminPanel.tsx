@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { generateQuizQuestions, fetchCurriculumTopics } from '@/services/geminiService';
-import { saveQuizToFirestore } from '@/services/dbService';
-import { Level, Quiz, Question } from '@/types';
-import { JSS_SUBJECTS, ALL_SSS_SUBJECTS, GET_DEPT_FOR_SSS } from '@/constants';
+import { generateQuizQuestions, fetchCurriculumTopics } from '@/services/geminiService.ts';
+import { saveQuizToFirestore } from '@/services/dbService.ts';
+import { Level, Quiz, Question } from '@/types.ts';
+import { JSS_SUBJECTS, ALL_SSS_SUBJECTS, GET_DEPT_FOR_SSS } from '@/constants.tsx';
 
 interface AdminPanelProps {
   onQuizCreated: (quiz: Quiz) => void;

@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { User } from '@/types';
-import Footer from '@/components/Footer';
+import { User } from '@/types.ts';
+import Footer from '@/components/Footer.tsx';
 
 interface LayoutProps {
   user: User;

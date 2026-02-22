@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Quiz } from '@/types';
+import { Quiz } from '@/types.ts';
 
 interface QuizReviewProps {
   quiz: Quiz;

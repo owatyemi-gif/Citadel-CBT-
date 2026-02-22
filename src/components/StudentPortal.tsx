@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Quiz, Level } from '@/types';
+import { Quiz, Level } from '@/types.ts';
 
 interface StudentPortalProps {
   quizzes: Quiz[];

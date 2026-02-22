@@ -6,7 +6,7 @@ import {
   signInWithPopup, 
   updateProfile 
 } from 'firebase/auth';
-import { auth, googleProvider } from '@/services/firebase';
+import { auth, googleProvider } from '@/services/firebase.ts';
 
 interface AuthFormProps {
   onSuccess: (user: any) => void;

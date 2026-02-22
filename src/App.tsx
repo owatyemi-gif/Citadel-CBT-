@@ -1,16 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { User, Quiz, Level, Department } from '@/types';
-import Layout from '@/components/Layout';
-import AdminPanel from '@/components/AdminPanel';
-import StudentPortal from '@/components/StudentPortal';
-import QuizPlayer from '@/components/QuizPlayer';
-import QuizReview from '@/components/QuizReview';
-import AuthForm from '@/components/AuthForm';
-import Footer from '@/components/Footer';
-import { auth } from '@/services/firebase';
-import { fetchQuizzesFromFirestore, deleteQuizFromFirestore } from '@/services/dbService';
+import { User, Quiz, Level, Department } from '@/types.ts';
+import Layout from '@/components/Layout.tsx';
+import AdminPanel from '@/components/AdminPanel.tsx';
+import StudentPortal from '@/components/StudentPortal.tsx';
+import QuizPlayer from '@/components/QuizPlayer.tsx';
+import QuizReview from '@/components/QuizReview.tsx';
+import AuthForm from '@/components/AuthForm.tsx';
+import Footer from '@/components/Footer.tsx';
+import { auth } from '@/services/firebase.ts';
+import { fetchQuizzesFromFirestore, deleteQuizFromFirestore } from '@/services/dbService.ts';
 
 type AppState = 'HOME' | 'ADMIN_LOGIN' | 'STUDENT_AUTH' | 'DASHBOARD' | 'QUIZ' | 'REVIEW' | 'ABOUT' | 'CONTACT' | 'FEATURES';
 

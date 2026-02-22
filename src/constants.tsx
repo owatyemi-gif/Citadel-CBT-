@@ -1,5 +1,5 @@
 
-import { Level, Department } from '@/types';
+import { Level, Department } from '@/types.ts';
 
 export const JSS_SUBJECTS = [
   'Mathematics',

@@ -9,8 +9,8 @@ import {
   doc, 
   limit 
 } from "firebase/firestore";
-import { db } from "@/services/firebase";
-import { Quiz } from "@/types";
+import { db } from "@/services/firebase.ts";
+import { Quiz } from "@/types.ts";
 
 const QUIZZES_COLLECTION = "quizzes";
 
