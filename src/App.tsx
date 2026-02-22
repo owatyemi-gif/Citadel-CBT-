@@ -7,10 +7,11 @@ import AdminPanel from './components/AdminPanel';
 import StudentPortal from './components/StudentPortal';
 import QuizPlayer from './components/QuizPlayer';
 import QuizReview from './components/QuizReview';
-import AuthForm from './components/AuthForm';
+import StudentAuth from './components/StudentAuth';
+import AdminAuth from './components/AdminAuth';
 import Footer from './components/Footer';
 import { auth } from './services/firebase';
-import { fetchQuizzesFromFirestore, deleteQuizFromFirestore } from './services/dbService';
+import { fetchQuizzesFromFirestore, deleteQuizFromFirestore, checkAdminByUsername } from './services/dbService';
 
 type AppState = 'HOME' | 'ADMIN_LOGIN' | 'STUDENT_AUTH' | 'DASHBOARD' | 'QUIZ' | 'REVIEW' | 'ABOUT' | 'CONTACT' | 'FEATURES';
 
@@ -24,8 +25,8 @@ const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const [adminUsername, setAdminUsername] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -61,15 +62,27 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Credentials updated to Citadelcbt and citadel1
-    if (adminUsername === 'Citadelcbt' && adminPassword === 'citadel1') {
-      setUser({ role: 'admin', name: 'Academic Director' });
-      setView('DASHBOARD');
-      setLoginError('');
-    } else {
-      setLoginError('Invalid Administrator Credentials');
+    setIsLoggingIn(true);
+    setLoginError('');
+    
+    try {
+      const admin = await checkAdminByUsername(adminUsername);
+      if (admin) {
+        setUser({ 
+          role: 'admin', 
+          name: admin.name,
+          username: admin.username 
+        });
+        setView('DASHBOARD');
+      } else {
+        setLoginError('Access Denied: Administrator ID not recognized in the registry.');
+      }
+    } catch (err) {
+      setLoginError('Security System Error: Unable to verify credentials.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -104,7 +117,6 @@ const App: React.FC = () => {
     setUser(null);
     setView('HOME');
     setAdminUsername('');
-    setAdminPassword('');
     setActiveQuiz(null);
     setReviewData(null);
   };
@@ -406,8 +418,8 @@ const App: React.FC = () => {
 
   if (view === 'STUDENT_AUTH') {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6">
-        <AuthForm 
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
+        <StudentAuth 
           onSuccess={(u) => { 
             setUser({ role: 'student', name: u.displayName || u.email }); 
             setView('DASHBOARD');
@@ -421,58 +433,10 @@ const App: React.FC = () => {
 
   if (view === 'ADMIN_LOGIN') {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-        <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full animate-fadeIn">
-          <button onClick={() => setView('HOME')} className="text-slate-400 hover:text-slate-600 mb-8 flex items-center text-sm font-bold">
-            <i className="fas fa-arrow-left mr-2"></i> Back to Home
-          </button>
-          <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-slate-900 text-white rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <i className="fas fa-shield-halved text-3xl"></i>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 mb-2 uppercase tracking-tighter">Admin Login</h1>
-            <p className="text-gray-500 text-sm">Authorized Personnel Only</p>
-          </div>
-
-          <form onSubmit={handleAdminLogin} className="space-y-6">
-            <div>
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Administrator ID</label>
-              <div className="relative">
-                <i className="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                <input 
-                  type="text"
-                  value={adminUsername}
-                  onChange={(e) => setAdminUsername(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 focus:outline-none transition-all font-bold"
-                  placeholder="Username"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Security Key</label>
-              <div className="relative">
-                <i className="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                <input 
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-600 focus:outline-none transition-all font-bold"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-            </div>
-            {loginError && <p className="text-red-500 text-xs font-bold text-center italic">{loginError}</p>}
-            <button 
-              type="submit"
-              className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:bg-slate-800 transition-all hover:-translate-y-1"
-            >
-              Verify Credentials
-            </button>
-          </form>
-        </div>
-      </div>
+      <AdminAuth 
+        onLogin={handleAdminLogin} 
+        onCancel={() => setView('HOME')} 
+      />
     );
   }
 
@@ -494,85 +458,14 @@ const App: React.FC = () => {
       ) : (
         <div className="animate-fadeIn">
           {user?.role === 'admin' ? (
-            <div className="space-y-12">
-              <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-100 pb-10 gap-6">
-                <div className="space-y-2">
-                  <div className="px-3 py-1 bg-indigo-600 text-white inline-block rounded text-[10px] font-black uppercase tracking-widest mb-2">Citadel Central Command</div>
-                  <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Academic Dashboard</h1>
-                  <p className="text-gray-500 font-medium">Manage WAEC, JAMB, and BECE standard technical examinations.</p>
-                </div>
-              </div>
-              
-              <AdminPanel onQuizCreated={(q) => setQuizzes([q, ...quizzes])} />
-
-              <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter flex items-center">
-                    <i className="fas fa-folder-open text-indigo-600 mr-3"></i>
-                    Examination Bank ({quizzes.length})
-                  </h2>
-                  <button onClick={loadData} className="text-indigo-600 hover:rotate-180 transition-transform duration-500 p-2">
-                    <i className="fas fa-sync-alt"></i>
-                  </button>
-                </div>
-
-                {errorMsg && (
-                  <div className="mb-8 p-6 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-xs font-bold flex items-start">
-                    <i className="fas fa-exclamation-circle mt-1 mr-4 text-xl"></i>
-                    <div>
-                      <p className="uppercase tracking-widest mb-1">Sync Error Detected</p>
-                      <p className="font-medium opacity-80">{errorMsg}</p>
-                    </div>
-                  </div>
-                )}
-
-                {quizzes.length === 0 && !errorMsg ? (
-                  <div className="text-center py-20 bg-slate-50 rounded-2xl border border-dashed border-gray-200">
-                    <p className="text-gray-400 italic font-medium">Examination bank is currently empty. Use the Generator above.</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                          <th className="py-4 px-6">Curriculum Domain</th>
-                          <th className="py-4 px-6">Standard Tier</th>
-                          <th className="py-4 px-6 text-center">Question Vol.</th>
-                          <th className="py-4 px-6 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {quizzes.map(q => (
-                          <tr key={q.id} className="border-b hover:bg-slate-50 transition-colors group">
-                            <td className="py-6 px-6">
-                              <p className="font-black text-slate-800 text-lg tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{q.subject}</p>
-                              <p className="text-[10px] text-indigo-400 font-black uppercase tracking-widest">{q.topic}</p>
-                            </td>
-                            <td className="py-6 px-6">
-                              <span className="bg-slate-900 text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-sm">
-                                {q.level} • {q.department ? q.department : 'General'}
-                              </span>
-                            </td>
-                            <td className="py-6 px-6 text-center">
-                              <span className="font-black text-slate-800 bg-gray-100 px-3 py-1 rounded-full text-sm">{q.questions.length}</span>
-                            </td>
-                            <td className="py-6 px-6 text-right">
-                              <button 
-                                onClick={() => handleDeleteQuiz(q.id)}
-                                className="w-10 h-10 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all flex items-center justify-center mx-auto md:ml-auto group/del shadow-sm hover:shadow-red-200"
-                                title="Remove from Bank"
-                              >
-                                <i className="fas fa-trash-alt group-hover/del:animate-pulse"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
+            <AdminPanel 
+              onQuizCreated={(q) => setQuizzes([q, ...quizzes])} 
+              currentUser={user}
+              quizzes={quizzes}
+              onDeleteQuiz={handleDeleteQuiz}
+              onRefresh={loadData}
+              errorMsg={errorMsg}
+            />
           ) : (
             <StudentPortal quizzes={quizzes} onStartQuiz={handleStartQuiz} />
           )}

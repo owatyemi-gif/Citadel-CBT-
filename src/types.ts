@@ -32,6 +32,15 @@ export interface Quiz {
 export interface User {
   role: 'admin' | 'student';
   name: string;
+  username?: string; // For admin login
+}
+
+export interface AdminUser {
+  id: string;
+  username: string;
+  name: string;
+  addedBy: string;
+  createdAt: number;
 }
 
 export interface QuizResult {
